@@ -105,28 +105,35 @@ public class Main {
 
 // ---------- Pokemon 클래스 ----------
 
-// 이 클래스는 위 JSON 데이터 중 "sprites" 부분만 다룬다.
-@JsonIgnoreProperties(ignoreUnknown = true)  // ①
-// 이 애너테이션의 의미:
-// - JSON에 있는 필드 중, 이 클래스에 선언되지 않은 필드는 무시하고 넘어가라.
-// - 즉, back_default 같은 필드는 무시한다.
-// - 만약 이 애너테이션이 없고, JSON에 back_default가 있으면 매핑할 곳이 없어서 Jackson이 에러를 발생시킴.
-public static class Sprites {
-    @JsonProperty("front_default")  // ②
+@JsonIgnoreProperties(ignoreUnknown = true)
+// 이 클래스에 없는 필드가 JSON에 있을 경우, 해당 필드는 무시하고 에러 발생시키지 않음
+// 예를 들어, JSON에 "abilities" 같은 필드가 있어도 이 클래스엔 없으니 그냥 무시함
+// 없으면: JSON 데이터에 예상치 못한 필드가 있을 때 Jackson이 에러 발생시킴
+
+class Pokemon {
+    // 포켓몬 기본 데이터를 담는 클래스
+    // 필요한 필드만 정의하고, 필요 없는 필드는 @JsonIgnoreProperties로 무시하도록 설정
+    // 이 클래스는 위 JSON 데이터 중 "sprites" 부분만 다룬다.
+    @JsonIgnoreProperties(ignoreUnknown = true)  // ①
     // 이 애너테이션의 의미:
-    // - JSON의 필드 이름 "front_default"를 이 필드(frontDefault)에 매핑한다.
-    // - 즉, JSON의 "front_default" 값을 자바의 frontDefault에 저장한다.
-    // - JSON 필드명과 자바 필드명이 다를 때 서로 연결해주는 역할.
-    public String frontDefault;  // ③
-    // 실제로 데이터를 담을 자바 필드
-    // - 이 필드에는 "https://example.com/pikachu.png"가 들어가게 된다.
+    // - JSON에 있는 필드 중, 이 클래스에 선언되지 않은 필드는 무시하고 넘어가라.
+    // - 즉, back_default 같은 필드는 무시한다.
+    // - 만약 이 애너테이션이 없고, JSON에 back_default가 있으면 매핑할 곳이 없어서 Jackson이 에러를 발생시킴.
+    public static class Sprites {
+        @JsonProperty("front_default")  // ②
+        // 이 애너테이션의 의미:
+        // - JSON의 필드 이름 "front_default"를 이 필드(frontDefault)에 매핑한다.
+        // - 즉, JSON의 "front_default" 값을 자바의 frontDefault에 저장한다.
+        // - JSON 필드명과 자바 필드명이 다를 때 서로 연결해주는 역할.
+        public String frontDefault;  // ③
+        // 실제로 데이터를 담을 자바 필드
+        // - 이 필드에는 "https://example.com/pikachu.png"가 들어가게 된다.
+    }
+    // Pokemon 클래스 안에서 이걸 사용하는 형태
+    public Sprites sprites;  // ④
+    // 이 필드는 Pokemon 클래스 안에 있고, JSON의 "sprites" 전체를 매핑할 때 사용된다.
+    // 즉, JSON의 "sprites" 객체가 통째로 Sprites 클래스에 매핑된다.
 }
-
-// Pokemon 클래스 안에서 이걸 사용하는 형태
-public Sprites sprites;  // ④
-// 이 필드는 Pokemon 클래스 안에 있고, JSON의 "sprites" 전체를 매핑할 때 사용된다.
-// 즉, JSON의 "sprites" 객체가 통째로 Sprites 클래스에 매핑된다.
-
 
 // ---------- PokemonSpecies 클래스 ----------
 
